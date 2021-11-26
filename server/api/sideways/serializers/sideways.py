@@ -13,6 +13,7 @@ from api.sideways.models import Sideway, Travel, Place
 
 class SidewayModelSerializer(serializers.ModelSerializer):
     """Sideway model serializer."""
+    place_name = serializers.SerializerMethodField(read_only=True)
     destination = serializers.SerializerMethodField(read_only=True)
     pending_to_accept = serializers.SerializerMethodField(read_only=True)
 
@@ -22,6 +23,7 @@ class SidewayModelSerializer(serializers.ModelSerializer):
         model = Sideway
         fields = (
             'id',
+            'place_name',
             'has_arrived',
             'state',
             'destination',
@@ -31,6 +33,10 @@ class SidewayModelSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'id',
         )
+
+    def get_place_name(self, obj):
+        if obj.place:
+            return obj.place.name
 
     def get_destination(self, obj):
         # Get the current travel
@@ -75,7 +81,7 @@ class RequestIfTheTripIsPossibleSerializer(serializers.Serializer):
         destination = Place.objects.filter(name=destination_name).first()
         if not destination:
             raise serializers.ValidationError("This destination not exists")
-        if Travel.objects.filter(sideway=sideway, origin=destination, is_over=False).exists():
+        if sideway.place == destination:
             raise serializers.ValidationError("Destination selected can't be your current location")
         return destination
 
@@ -102,7 +108,7 @@ class RequestIfTheTripIsPossibleSerializer(serializers.Serializer):
 # Start the trip serializer
 class StartTripSerializer(serializers.Serializer):
 
-    def validate(self):
+    def validate(self, data):
         sideway = self.instance
         travel = Travel.objects.filter(sideway=sideway, is_over=False, is_active=False).first()
         if not travel:
@@ -130,8 +136,9 @@ class StartTripSerializer(serializers.Serializer):
 
 # End the trip serializer
 class EndTripSerializer(serializers.Serializer):
-    def validate(self):
+    def validate(self, data):
         sideway = self.instance
+
         travel = Travel.objects.filter(sideway=sideway, is_over=False, is_active=True).first()
         if not travel:
             raise serializers.ValidationError("No travel active")
@@ -156,7 +163,7 @@ class EndTripSerializer(serializers.Serializer):
 
 
 class CancelTripSerializer(serializers.Serializer):
-    def validate(self):
+    def validate(self, data):
         sideway = self.instance
         travel = Travel.objects.filter(sideway=sideway, is_over=False).first()
         if not travel:
