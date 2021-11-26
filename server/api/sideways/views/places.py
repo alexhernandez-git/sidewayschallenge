@@ -15,10 +15,6 @@ from api.sideways.models import Place
 # Serializers
 from api.sideways.serializers import (
     PlaceModelSerializer,
-    RequestIfTheTripIsPossibleSerializer,
-    StartTripSerializer,
-    EndTripSerializer,
-    CancelTripSerializer
 )
 
 # Filters

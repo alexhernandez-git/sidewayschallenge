@@ -57,7 +57,7 @@ class SidewayModelSerializer(serializers.ModelSerializer):
 # Request if the trip is possible serializer
 
 
-class RequestIfTheTripIsPossibleSerializer(serializers.Serializer):
+class CheckIfTripIsPossibleSerializer(serializers.Serializer):
     destination = serializers.CharField()
 
     def validate(self, data):

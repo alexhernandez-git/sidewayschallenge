@@ -15,7 +15,7 @@ from api.sideways.models import Sideway, Travel
 # Serializers
 from api.sideways.serializers import (
     SidewayModelSerializer,
-    RequestIfTheTripIsPossibleSerializer,
+    CheckIfTripIsPossibleSerializer,
     StartTripSerializer,
     EndTripSerializer,
     CancelTripSerializer,
@@ -42,7 +42,7 @@ class SidewayViewSet(
         """
         Extra context provided to the serializer class.
         """
-        if self.action in ['request_if_the_trip_is_possible']:
+        if self.action in ['check_if_trip_is_possible']:
             return {
                 'request': self.request,
                 'format': self.format_kwarg,
@@ -66,8 +66,8 @@ class SidewayViewSet(
 
         (Eg. admins get full serialization, others get basic serialization)
         """
-        if self.action in ['request_if_the_trip_is_possible']:
-            return RequestIfTheTripIsPossibleSerializer
+        if self.action in ['check_if_trip_is_possible']:
+            return CheckIfTripIsPossibleSerializer
         elif self.action in ['start_trip']:
             return StartTripSerializer
         elif self.action in ['end_trip']:
@@ -88,6 +88,7 @@ class SidewayViewSet(
 
     @action(detail=True, methods=['post'])
     def check_if_trip_is_possible(self, request, *args, **kwargs):
+        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sideway = serializer.save()
