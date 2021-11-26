@@ -1,0 +1,12 @@
+# Sideways challenge
+
+# Pensamientos y dudas (Aqui explico porque he hecho lo que he hecho)
+
+He empezado creado el UI en react y estoy añadiendo Redux para manejar el estado, se me estan surgiendo algunas dudas como que si un sideway ya esta en un viaje deveriamos dejar que cambie de ruta sin que cancele la actual, si es asi seria conveniente poner una doble validación para que no la cambie por accidente, incluso lo que se deveria hacer es darle la opción de confirmar el cambio de ruta cuando el backend ha devuelto un resultado positivo, osea que es posible llegar al destino, y por supuesto que el cancelar destino te pida la confirmación en el instante.
+
+Por lo que veo también es que tiene que haber un login para que se le pueda asignar un vehiculo al usuario, pero la pregunta es: que pasa si el usuario se loguea pero al final no usa el vehiculo, porque me imagino que cuando se le asigna un vehiculo a un usuario no puede volver a ser asignado, esto se podria solucionar poniendo un tiempo de inactividad, para volver a desvincular el viehiculo. Y la otra pregunta es cuando un usuario selecciona un destino debe estar encima del vehiculo, pero que pasa cuando el usuario no esta en el vehiculo, en que momento el vehiculo va al usuario, ¿cuando se loguea? o cuando lo llama estando logueado antes de elegir un destino.
+Porque la aplicación esta en teoria la tiene el usuario en su movil porque si no como llama al vehiculo?
+De momento voy a setear un usuario por defecto, y un vehiculo por defecto, el cual va a buscar en la base de datos al entrar en la pagina.
+El backend lo he pensado de la siguiente manera, he separado la información en tres modelos, el de places que son todas las ubicaciones que puede tener por ejemplo un hospital, los sideways que son los vehiculos y los travels que son los viajes que han hecho o estan haciendo, de esta forma siempre tendremos registros de los viajes que ha hecho un sideway, si han sido cancelados o no y si han llegado a su destino, incluso se podria añadir el motivo de la cancelación o datos de feedback.
+También habria que cancelar los viajes preparados por si la persona decide no aceptarlos pero tampoco cancelarlos (Por si se sale de la app), porque el viaje se guardara inactivo en la base de datos con el objectivo de tener mas datos, como por ejemplo saber cuantos viajes se han solicitado pero al final no se ha dado una respuesta (si si o si no)
+Si no se ha hecho ninguna acción con el viaje permitido, se va a parar cuando pase un minuto

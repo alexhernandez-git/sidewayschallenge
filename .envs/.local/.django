@@ -1,0 +1,11 @@
+# Django
+DJANGO_SECRET_KEY=c8jdhs)2-=c46n)i-9h8-8f#ko8x*dt@=e4eh65*5(@n#d&gw%
+DEBUG=True
+
+
+# Redis
+REDIS_URL=redis://redis:6379/0
+
+# Flower
+CELERY_FLOWER_USER=AkSCzUUkrubMopHkMlHHIiFnUawfefeawKhIidG
+CELERY_FLOWER_PASSWORD=jspxQGdwrs9VbGLmn5FmXRAGqNt5D6fewaosRgqggNJl1JgcdcCYZdCf7Ch0jcgG0nH7

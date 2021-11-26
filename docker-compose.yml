@@ -1,0 +1,65 @@
+version: "3"
+
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/dev/Dockerfile
+    depends_on:
+      - postgres
+      - redis
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/local/bin/docker
+      - /usr/bin/docker-compose:/usr/bin/docker-compose
+      - ./server:/app
+
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    command: /start
+
+  postgres:
+    image: postgres:11
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+      - local_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.local/.postgres
+
+  redis:
+    image: redis:6-alpine
+
+  celeryworker:
+    <<: *django
+    image: sideways_local_celeryworker
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: sideways_local_celerybeat
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: sideways_local_flower
+    ports:
+      - "5555:5555"
+    command: /start-flower
