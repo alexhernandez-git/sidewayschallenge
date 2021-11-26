@@ -20,7 +20,7 @@ DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost'])
 
-# CORS_ORIGIN_WHITELIST = env.list('CORS_ORIGIN_WHITELIST', default=('localhost',))
+CORS_ORIGIN_WHITELIST = env.list('CORS_ORIGIN_WHITELIST', default=('http://localhost:3000',))
 
 
 CORS_ALLOW_HEADERS = [

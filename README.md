@@ -1,6 +1,6 @@
 # Sideways challenge
 
-# Pensamientos y dudas (Aqui explico porque he hecho lo que he hecho)
+# Pensamientos y dudas (Aqui explico porque he hecho lo que he hecho y algunas dudas que me gustaria resolver)
 
 He empezado creado el UI en react y estoy añadiendo Redux para manejar el estado, se me estan surgiendo algunas dudas como que si un sideway ya esta en un viaje deveriamos dejar que cambie de ruta sin que cancele la actual, si es asi seria conveniente poner una doble validación para que no la cambie por accidente, incluso lo que se deveria hacer es darle la opción de confirmar el cambio de ruta cuando el backend ha devuelto un resultado positivo, osea que es posible llegar al destino, y por supuesto que el cancelar destino te pida la confirmación en el instante.
 
