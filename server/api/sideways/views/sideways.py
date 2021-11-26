@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 # Permissions
 
 # Models
-from api.sideways.models import Sideway, Travel
+from api.sideways.models import Sideway
 
 # Serializers
 from api.sideways.serializers import (
@@ -19,6 +19,7 @@ from api.sideways.serializers import (
     StartTripSerializer,
     EndTripSerializer,
     CancelTripSerializer,
+    DeclineTripSerializer
 )
 
 # Filters
@@ -70,6 +71,8 @@ class SidewayViewSet(
             return CheckIfTripIsPossibleSerializer
         elif self.action in ['start_trip']:
             return StartTripSerializer
+        elif self.action in ['decline_trip']:
+            return DeclineTripSerializer
         elif self.action in ['end_trip']:
             return EndTripSerializer
         elif self.action in ['cancel_trip']:
@@ -79,7 +82,8 @@ class SidewayViewSet(
     # Retrieve available sideway ['get']
     @action(detail=False, methods=['get'])
     def retrieve_available_sideway(self, request, *args, **kwargs):
-        sideway = Sideway.objects.filter(state=Sideway.FREE).first()
+        # With the user the query will be status free or is my user
+        sideway = Sideway.objects.all().first()
         if not sideway:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(SidewayModelSerializer(sideway).data, status=status.HTTP_200_OK)
@@ -88,7 +92,6 @@ class SidewayViewSet(
 
     @action(detail=True, methods=['post'])
     def check_if_trip_is_possible(self, request, *args, **kwargs):
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sideway = serializer.save()
@@ -98,6 +101,21 @@ class SidewayViewSet(
     # Start the trip ['patch']
     @action(detail=True, methods=['patch'])
     def start_trip(self, request, *args, **kwargs):
+        sideway = self.get_object()
+        partial = request.method == 'PATCH'
+        serializer = self.get_serializer(
+            sideway,
+            data=request.data,
+            partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        sideway = serializer.save()
+        data = SidewayModelSerializer(sideway).data
+        return Response(data, status=status.HTTP_200_OK)
+
+        # Start the trip ['patch']
+    @action(detail=True, methods=['patch'])
+    def decline_trip(self, request, *args, **kwargs):
         sideway = self.get_object()
         partial = request.method == 'PATCH'
         serializer = self.get_serializer(

@@ -106,6 +106,32 @@ class CheckIfTripIsPossibleSerializer(serializers.Serializer):
         return sideway
 
 
+class DeclineTripSerializer(serializers.Serializer):
+    def validate(self, data):
+        sideway = self.instance
+        travel = Travel.objects.filter(sideway=sideway, is_over=False, is_active=False).first()
+        if not travel:
+            raise serializers.ValidationError("No travel active")
+        return {"travel": travel}
+
+    def update(self, instance, validated_data):
+        sideway = instance
+        travel = validated_data['travel']
+        travel.is_over = True
+        travel.save()
+
+        # Update sideway place
+        sideway.place = travel.origin
+        sideway.has_arrived = True
+
+        # Update stats
+        sideway.trips_declined += 1
+        sideway.state = Sideway.FREE
+
+        sideway.save()
+        return sideway
+
+
 # Start the trip serializer
 class StartTripSerializer(serializers.Serializer):
 
@@ -131,6 +157,34 @@ class StartTripSerializer(serializers.Serializer):
 
         # Update stats
         sideway.trips_started += 1
+        sideway.state = Sideway.BUSY
+        sideway.save()
+        return sideway
+
+
+class CancelTripSerializer(serializers.Serializer):
+    def validate(self, data):
+        sideway = self.instance
+        travel = Travel.objects.filter(sideway=sideway, is_over=False).first()
+        if not travel:
+            raise serializers.ValidationError("No travel active")
+        return {"travel": travel}
+
+    def update(self, instance, validated_data):
+        sideway = instance
+        travel = validated_data['travel']
+        travel.is_cancelled = True
+        travel.is_over = True
+        travel.save()
+
+        # Update sideway place
+        sideway.place = travel.origin
+        sideway.has_arrived = True
+
+        # Update stats
+        sideway.trips_cancelled += 1
+        sideway.state = Sideway.FREE
+
         sideway.save()
         return sideway
 
@@ -157,32 +211,7 @@ class EndTripSerializer(serializers.Serializer):
 
         # Update stats
         sideway.trips_completed += 1
-        sideway.save()
-        return sideway
+        sideway.state = Sideway.FREE
 
-# Cancel the trip serializer
-
-
-class CancelTripSerializer(serializers.Serializer):
-    def validate(self, data):
-        sideway = self.instance
-        travel = Travel.objects.filter(sideway=sideway, is_over=False).first()
-        if not travel:
-            raise serializers.ValidationError("No travel active")
-        return {"travel": travel}
-
-    def update(self, instance, validated_data):
-        sideway = instance
-        travel = validated_data['travel']
-        travel.is_cancelled = True
-        travel.is_over = True
-        travel.save()
-
-        # Update sideway place
-        sideway.place = travel.origin
-        sideway.has_arrived = True
-
-        # Update stats
-        sideway.trips_cancelled += 1
         sideway.save()
         return sideway

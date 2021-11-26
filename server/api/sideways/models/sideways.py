@@ -31,3 +31,4 @@ class Sideway(BaseModel):
     trips_cancelled = models.IntegerField(default=0)
     trips_timeout = models.IntegerField(default=0, help_text='Trips accepted but not action maked.')
     trips_accepted = models.IntegerField(default=0, help_text='Trips that has been accepted.')
+    trips_declined = models.IntegerField(default=0, help_text='Trips that has been declined by the user.')
