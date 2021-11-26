@@ -28,7 +28,7 @@ def check_if_trip_has_not_been_activated():
         is_over=False
     )
     for travel in travels:
-        if travel.created + timedelta(minutes=1) > now:
+        if now > travel.created + timedelta(minutes=20):
             travel.is_over = True
             travel.save()
 

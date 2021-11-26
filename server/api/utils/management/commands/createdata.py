@@ -13,3 +13,4 @@ class Command(BaseCommand):
             id="PHX-001",
             place=Place.objects.create(name="Estación de carga", is_default=True)
         )
+        print("Data created successfully")

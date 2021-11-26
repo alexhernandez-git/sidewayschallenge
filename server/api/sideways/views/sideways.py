@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 # Permissions
 
 # Models
-from api.sideways.models import Sideway
+from api.sideways.models import Sideway, Travel
 
 # Serializers
 from api.sideways.serializers import (
@@ -18,7 +18,7 @@ from api.sideways.serializers import (
     RequestIfTheTripIsPossibleSerializer,
     StartTripSerializer,
     EndTripSerializer,
-    CancelTripSerializer
+    CancelTripSerializer,
 )
 
 # Filters
@@ -42,7 +42,7 @@ class SidewayViewSet(
         """
         Extra context provided to the serializer class.
         """
-        if self.action in ['requesst_if_the_trip_is_possible']:
+        if self.action in ['request_if_the_trip_is_possible']:
             return {
                 'request': self.request,
                 'format': self.format_kwarg,
@@ -82,22 +82,22 @@ class SidewayViewSet(
         sideway = Sideway.objects.filter(state=Sideway.FREE).first()
         if not sideway:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(SidewayModelSerializer(sideway).data)
+        return Response(SidewayModelSerializer(sideway).data, status=status.HTTP_200_OK)
 
     # Request if the trip is possible ['post']
+
     @action(detail=True, methods=['post'])
     def request_if_the_trip_is_possible(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        headers = self.get_success_headers(serializer.data)
-        return Response(status=status.HTTP_201_CREATED, headers=headers)
+        sideway = serializer.save()
+        data = SidewayModelSerializer(sideway).data
+        return Response(data=data, status=status.HTTP_201_CREATED)
 
     # Start the trip ['patch']
     @action(detail=True, methods=['patch'])
     def start_trip(self, request, *args, **kwargs):
         sideway = self.get_object()
-
         partial = request.method == 'PATCH'
         serializer = self.get_serializer(
             sideway,

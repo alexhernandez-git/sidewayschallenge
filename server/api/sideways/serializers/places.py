@@ -13,7 +13,6 @@ from api.sideways.models import Place
 
 class PlaceModelSerializer(serializers.ModelSerializer):
     """Place model serializer."""
-    destination = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         """Meta class."""
