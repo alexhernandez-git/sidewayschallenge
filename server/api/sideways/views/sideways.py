@@ -87,7 +87,7 @@ class SidewayViewSet(
     # Request if the trip is possible ['post']
 
     @action(detail=True, methods=['post'])
-    def request_if_the_trip_is_possible(self, request, *args, **kwargs):
+    def check_if_trip_is_possible(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sideway = serializer.save()

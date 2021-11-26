@@ -70,7 +70,6 @@ class RequestIfTheTripIsPossibleSerializer(serializers.Serializer):
         # Validate if you already are on a trip
         if Travel.objects.filter(sideway=sideway, is_over=False, is_active=True).exists():
             raise serializers.ValidationError("You are already on a trip")
-
         if random.random() < 0.33:
             raise serializers.ValidationError("Trip not possible")
         return data
@@ -81,6 +80,8 @@ class RequestIfTheTripIsPossibleSerializer(serializers.Serializer):
         destination = Place.objects.filter(name=destination_name).first()
         if not destination:
             raise serializers.ValidationError("This destination not exists")
+        if destination.is_default:
+            raise serializers.ValidationError("User cannot choice the default destination")
         if sideway.place == destination:
             raise serializers.ValidationError("Destination selected can't be your current location")
         return destination
@@ -173,7 +174,6 @@ class CancelTripSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         sideway = instance
         travel = validated_data['travel']
-        sideway.travels_cancelled
         travel.is_cancelled = True
         travel.is_over = True
         travel.save()
@@ -185,4 +185,4 @@ class CancelTripSerializer(serializers.Serializer):
         # Update stats
         sideway.trips_cancelled += 1
         sideway.save()
-        return travel
+        return sideway
